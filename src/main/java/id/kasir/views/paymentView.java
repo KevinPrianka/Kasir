@@ -1,10 +1,8 @@
-package id.payment.app.view;
+package kasir.app.view;
 
-import id.payment.app.services.paymentService;
-import id.payment.app.models.productModel;
-
-import id.payment.app.models.Payment;
-import java.sql.*;
+import kasir.app.services.paymentService;
+import kasir.app.models.Productpost;
+import kasir.app.models.Payment;
 import java.util.List;
 import java.awt.event.*;
 import javax.swing.*;
@@ -23,6 +21,28 @@ public class paymentView extends JFrame {
     static JTable jt, checkout;
 
     static List<Payment> payment = new ArrayList<>();
+    
+    public paymentView() {
+        //membuat frame
+        JFrame f = new JFrame("KASIR");
+
+        //program akan berhenti jika keluar
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        //ukuran frame
+        f.setSize(800, 800);
+
+        //summon panel
+        JPanel panel = new JPanel();
+        f.add(panel);
+        PaymentInterface(panel);
+        f.setLocationRelativeTo(null);
+        f.setResizable(false);
+        f.setVisible(true);
+        handleConfirmButtonClick();
+        handlePayButtonClick();
+        refreshCheckoutTable();
+    }
 
     private static void PaymentInterface(JPanel panel) {
 
@@ -30,25 +50,25 @@ public class paymentView extends JFrame {
 
         //SUMMON DATABASE
         paymentService paymentService = new paymentService();
-        List<productModel> products = paymentService.getAll();
+        List<Productpost> products = paymentService.getAll();
 
         //TABLE
         jt = new JTable();
         DefaultTableModel model = new DefaultTableModel();
-        Object[] columns = new Object[4];
+        Object[] columns = new Object[3];
         columns[0] = "Id Barang";
         columns[1] = "Nama Barang";
         columns[2] = "Harga";
-        columns[3] = "Stock";
+        
 
         model.setColumnIdentifiers(columns);
 
-        for (productModel product : products) {
-            Object[] data = new Object[4];
+        for (Productpost product : products) {
+            Object[] data = new Object[3];
             data[0] = product.getCode();
             data[1] = product.getName();
             data[2] = product.getPrice();
-            data[3] = product.getStock();
+            
 
             model.addRow(data);
         }
@@ -123,6 +143,7 @@ public class paymentView extends JFrame {
         payButton = new JButton("Bayar");
         payButton.setBounds(420, 690, 100, 30);
         panel.add(payButton);
+        
 
         confButton = new JButton("Konfirmasi");
         confButton.setBounds(260, 690, 100, 30);
@@ -130,28 +151,6 @@ public class paymentView extends JFrame {
 
     }
 
-    public static void main(String[] args) {
-        //membuat frame
-        JFrame f = new JFrame("KASIR");
-
-        //program akan berhenti jika keluar
-        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        //ukuran frame
-        f.setSize(800, 800);
-
-        //summon panel
-        JPanel panel = new JPanel();
-        f.add(panel);
-        PaymentInterface(panel);
-        f.setLocationRelativeTo(null);
-        f.setResizable(false);
-        f.setVisible(true);
-        handleConfirmButtonClick();
-        handlePayButtonClick();
-        refreshCheckoutTable();
-    }
-    
     public static void refreshCheckoutTable() {
         DefaultTableModel checkoutModel = new DefaultTableModel();
         Object[] checkoutColumns = new Object[2];
@@ -179,7 +178,7 @@ public class paymentView extends JFrame {
                 String amount = amountText.getText().toString();
 
                 paymentService service = new paymentService();
-                productModel product = service.getByName(name);
+                Productpost product = service.getByName(name);
 
                 if (product != null) {
                     int price = product.getPrice();
@@ -200,6 +199,16 @@ public class paymentView extends JFrame {
         payButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                paymentService service = new paymentService();
+                
+                for (Payment pay : payment) {
+                   String code = pay.getProduct().getCode();
+                   int amount = pay.getAmount();
+                   
+                   service.decreaseStock(code, amount);
+                }
+                
+                
                 int bill = 0;
         
                 for (Payment pay : payment) {
@@ -231,4 +240,9 @@ public class paymentView extends JFrame {
         codeText.setText("");
         amountText.setText("");
     }
-}
+    
+
+            
+        }
+    
+

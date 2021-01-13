@@ -1,5 +1,5 @@
-package id.kasir.app.models;
-import id.kasir.app.models.Productpost;
+package kasir.app.models;
+import kasir.app.models.Productpost;
 
 public class Productpost {
    

@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+package kasir.app.models;
 /**
  *
  * @author baros
  */
-class Payment {
+public class Payment {
   int Amount, Payment;
-  Product product;
+  Productpost productPay;
   
   //SETTER
-  public void setProduct(Product product) {
-      this.product = product; 
+  public void setProduct(Productpost product) {
+      this.productPay = product; 
   }
   
   public void setAmount(int amount) {
@@ -26,8 +26,8 @@ class Payment {
   }
   
   //GETTER
-     public Product getProduct() {
-    return product; 
+     public Productpost getProduct() {
+    return productPay; 
   }
    
     public int getAmount() {
@@ -40,10 +40,10 @@ class Payment {
 
   //CALCULATION
   public int Bill, moneyChanges;
-  int Bill() {
-      return getAmount() * product.getPrice();
+  public int Bill() {
+      return getAmount() * productPay.getPrice();
   }
-  int moneyChanges() {
+  public int moneyChanges() {
       return getPayment() - Bill();
   }
 } 
